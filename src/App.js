@@ -1,9 +1,59 @@
 import './App.css' ;
-import React, { useEffect, useState } from 'react' ;
+import React, { useEffect, useState, useRef } from 'react' ;
+
+
+const MoviePopup = ({ movie, setSelectedMovie, imageBaseUrl, langToCountry, renderStars, useDonwloader, setUseDownloader }) => {
+  if (!movie) return null;
+  return (
+    <div className="popup-overlay" onClick={() => setSelectedMovie(null)}>
+      <div className="popup-content" onClick={e => e.stopPropagation()}>
+        <img
+          className="detail-poster"
+          src={`${imageBaseUrl}${movie.poster_path}`}
+          alt={movie.title}
+        />
+        <div className="popup-details">
+          <h2>{movie.title}</h2>
+          {!useDonwloader ?
+            <div>
+              <div className="titre-lang">
+                <img
+                  className="lang-icon"
+                  src={`https://flagcdn.com/w40/${langToCountry[movie.original_language]}.png`}
+                  alt={movie.original_language}
+                  title={movie.original_language}
+                />
+                <div>
+                  <p>{movie.original_title} ({movie.release_date.split('-')[0]})</p>
+                </div>
+              </div>
+              <div className="stars">
+                {renderStars(movie.vote_average)}
+                <span className="vote-count">({movie.vote_count} votes)</span>
+              </div>
+              <p><strong>Synopsis :</strong> {movie.overview}</p>
+              <div className="play-button">
+                <a href={`https://vidsrc.cc/v2/embed/movie/${movie.id}`} target="_blank" rel="noopener noreferrer">
+                  <img alt="play" className="icon-play" src="assets/play.svg" />
+                </a>
+                <img alt="donwload video" className="icon-play" src="assets/download.svg" onClick={() => setUseDownloader(true)}/>
+              </div>
+            </div> :
+            <div className='downloader'>
+              <p>Menu de téléchargement</p>
+            </div>
+          }     
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 
 function App() {
 
-  const authorization = "Bearer <enter token here>"
+  const authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhYTA1OGUwZjY4ODE1YjViMzQ0NDRhZGJmY2I5OTViNCIsIm5iZiI6MTc0NDk5NzQ4MC41NTUsInN1YiI6IjY4MDI4YzY4ZDMxN2JlNWU1Yzk5MzkyOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.VewGujN9VmNCRP7-xO8gIrgQraOJtETNb8aalP2T2iA' ;
   
   const [currentMoviesData, setCurrentMoviesData] = useState({ results: [] }) ;
   const [currentPage, setCurrentPage] = useState(1) ;
@@ -13,6 +63,8 @@ function App() {
   const [currentSrc, setCurrentSrc] = useState('trending') ;
   const [currentMaxPage, setCurrentMaxPage] = useState(null) ;
   const [isLoading, setIsLoading] = useState(true) ;
+  const [useDonwloader, setUseDownloader] = useState(false) ;
+
 
 
   async function get_trending_movies(page) {
@@ -96,43 +148,8 @@ function App() {
     return stars;
   };
   
-
-  const renderMoviePopup = (movie) => (
-    <div className="popup-overlay" onClick={() => setSelectedMovie(null)}>
-      <div className="popup-content" onClick={e => e.stopPropagation()}>
-        <img className='detail-poster' src={`${imageBaseUrl}${movie.poster_path}`} alt={movie.title} />
-        <div className="popup-details">
-          <h2>{movie.title}</h2>
-          <div className='titre-lang'>
-            <img
-              className='lang-icon'
-              src={`https://flagcdn.com/w40/${langToCountry[movie.original_language]}.png`}
-              alt={movie.original_language}
-              title={movie.original_language}
-            />
-            <div><p>{movie.original_title} ({movie.release_date.split('-')[0]})</p></div>
-          </div>
-          
-          <div className="stars">
-            {renderStars(movie.vote_average)}
-            <span className="vote-count">({movie.vote_count} votes)</span>
-          </div>
-          <p><strong>Synopsis :</strong> {movie.overview}</p>
-
-          <div className='play-button'>
-            <a href={`https://vidsrc.cc/v2/embed/movie/${movie.id}`}>
-              <img
-                alt="play"
-                className='icon-play'
-                src="assets/play.svg"
-              />
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
+  
+  
   const imageBaseUrl = 'https://image.tmdb.org/t/p/w500';
 
   return (
@@ -215,7 +232,17 @@ function App() {
                   <h2 className='movie-title'>{movie.title}</h2>
                 </div>
               ))}
-              {selectedMovie && renderMoviePopup(selectedMovie)}
+              {selectedMovie && 
+                <MoviePopup
+                  movie={selectedMovie}
+                  setSelectedMovie={setSelectedMovie}
+                  imageBaseUrl={imageBaseUrl}
+                  langToCountry={langToCountry}
+                  renderStars={renderStars}
+                  useDonwloader={useDonwloader}
+                  setUseDownloader={setUseDownloader}
+                />
+              }
             </div>
 
             <div className='menu'>
