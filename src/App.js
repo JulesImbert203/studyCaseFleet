@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react' ;
 
 function App() {
 
-  const authorization = "Bearer <enter token here>"
+  const authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhYTA1OGUwZjY4ODE1YjViMzQ0NDRhZGJmY2I5OTViNCIsIm5iZiI6MTc0NDk5NzQ4MC41NTUsInN1YiI6IjY4MDI4YzY4ZDMxN2JlNWU1Yzk5MzkyOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.VewGujN9VmNCRP7-xO8gIrgQraOJtETNb8aalP2T2iA' ;
   
   const [currentMoviesData, setCurrentMoviesData] = useState({ results: [] }) ;
   const [currentPage, setCurrentPage] = useState(1) ;
